@@ -9,11 +9,13 @@
     "bootstrap": "^4.5.2",
     "clean": "^4.0.2",
     "firebase": "^7.19.1",
+    "moment": "^2.29.1",
     "react": "^16.13.1",
     "react-bootstrap": "^1.4.0",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^3.4.4"
+    "react-scripts": "^3.4.4",
+    "react-shadow-scroll": "^2.1.0"
   },
   "scripts": {
     "start": "react-scripts start",

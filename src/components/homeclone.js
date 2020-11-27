@@ -10,13 +10,13 @@ import notification from '../images/notification.svg';
 import people from '../images/people.svg';
 import settings from '../images/settings.svg';
 import sms from '../images/sms.svg';
-import moment from 'moment'
+import home from '../images/home.svg';
 // import "./App.css";
 
 // import AddTutorial from "./components/add-tutorial.component";
 // import Home from "./components/Home";
 
-class Home extends Component {
+class Homeclone extends Component {
   constructor(props) {
     super(props);
     this.refreshList = this.refreshList.bind(this);
@@ -27,23 +27,11 @@ class Home extends Component {
       tutorials: [],
       currentTutorial: null,
       currentIndex: -1,
-      lithuania: '',
-      uk: ''
     };
-    // this.getImage('lithuania')
-    // this.getImage('uk')
+
     this.unsubscribe = undefined;
   }
 
-  // getImage (image) {
-  //   let { state } = this
-  //   storage.child(`${image}.png`).getDownloadURL().then((url) => {
-  //     state[image] = url
-  //     this.setState(state)
-  //   }).catch((error) => {
-  //     // Handle any errors
-  //   })
-  // }
   componentDidMount() {
     this.unsubscribe = TutorialDataService.getAll().orderBy("timestamp", "asc").onSnapshot(this.onDataChange);
   }
@@ -63,18 +51,13 @@ class Home extends Component {
         userId:data.userId,
         name: data.name,
         description: data.description,
-        timestamp:   new Date( data.timestamp).toLocaleString(),
-        userimage:data.userimage
+        timestamp: data.timestamp,
       });
     });
 
     this.setState({
       tutorials: tutorials,
-      
     });
-
-    console.log(Math.floor(new Date().getTime()/1000.0))
-
   }
 
   refreshList() {
@@ -197,14 +180,14 @@ class Home extends Component {
              
            
            </div>
-          {tutorials.map((post,index)=>(
-
+          
+               
                 <div className="col-sm-6" 
            style={{
             backgroundColor:'linen',
            
           }}
-key={index}
+
            >
 
 {/* {tutorials.map((tutorial, index) => ( */}
@@ -231,12 +214,10 @@ key={index}
       <Image src={require('../images/passport.jpg')} width='60' height="60" roundedCircle />
     </Col>
     <Col xs={6} md={4} style={{paddingTop:20}}>
-    {post.name}
+    tutorial.name
     </Col>
     <Col xs={6} md={4}  style={{paddingTop:20}}>
-    {/* {moment(post.timestamp).startOf('hour').fromNow()}  */}
-
-      {post.timestamp}
+      2 hours ago
     </Col>
   </Row>
 </Container>
@@ -245,7 +226,7 @@ key={index}
                <div>
                  
                  <Container style={{marginBottom:10}}>
-      <Image src={post.userimage} width="100%" height="10%" />
+      <Image src={require('../images/ic_launcher.png')} width="100%" height="10%" />
 
                  </Container>
                 
@@ -255,7 +236,7 @@ key={index}
                <Row>
                  <Col xs={6} md={12} style={{paddingTop:10}}>
     
-                {post.name} : {post.description}
+                 Hamza mugabo: The new icon
  
 
     </Col>
@@ -292,7 +273,7 @@ key={index}
                {/* here */}
            </div>
              
-           ))}
+           
            <div className="col-sm-2"></div>
 
        </div>
@@ -302,4 +283,4 @@ key={index}
   }
 }
 
-export default Home;
+export default Homeclone;

@@ -18,3 +18,9 @@
   max-width: 300px;
   margin: auto;
 }
+.body {
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 10px;
+}
