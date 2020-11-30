@@ -11,7 +11,8 @@ import people from '../images/people.svg';
 import settings from '../images/settings.svg';
 import sms from '../images/sms.svg';
 import moment from 'moment'
-// import "./App.css";
+import {auth} from '../firebase';
+ // import "./App.css";
 
 // import AddTutorial from "./components/add-tutorial.component";
 // import Home from "./components/Home";
@@ -22,13 +23,16 @@ class Home extends Component {
     this.refreshList = this.refreshList.bind(this);
     this.setActiveTutorial = this.setActiveTutorial.bind(this);
     this.onDataChange = this.onDataChange.bind(this);
+    this.check=this.check.bind(this);
 
     this.state = {
       tutorials: [],
       currentTutorial: null,
       currentIndex: -1,
       lithuania: '',
-      uk: ''
+      uk: '',
+      currentUser:null
+
     };
     // this.getImage('lithuania')
     // this.getImage('uk')
@@ -46,10 +50,19 @@ class Home extends Component {
   // }
   componentDidMount() {
     this.unsubscribe = TutorialDataService.getAll().orderBy("timestamp", "asc").onSnapshot(this.onDataChange);
+   this.check();
+  }
+  check(){
+    auth.onAuthStateChanged(function(user) {
+      if (user) {
+        
+        console.log(user);
+      } 
+    });
   }
 
   componentWillUnmount() {
-    this.unsubscribe();
+    // this.unsubscribe();
   }
 
   onDataChange(items) {
@@ -63,7 +76,7 @@ class Home extends Component {
         userId:data.userId,
         name: data.name,
         description: data.description,
-        timestamp:   new Date( data.timestamp).toLocaleString(),
+        timestamp:  data.timestamp,
         userimage:data.userimage
       });
     });
@@ -93,7 +106,7 @@ class Home extends Component {
 
   render() {
     const { tutorials, currentTutorial, currentIndex } = this.state;
-
+    // var user = auth.currentUser;
     return (
       <div style={{backgroundColor:'linen',marginTop:90}}>
       <div  style={{overflowX:'hidden'}}>
@@ -111,7 +124,7 @@ class Home extends Component {
 
     </Col>
     <Col xs={6} md={4} style={{paddingTop:20}}>
-   <strong> Hamza mugabo</strong>
+   <strong>name</strong>
     
  {/* <Badge variant="light">9</Badge> */}
 
@@ -227,16 +240,18 @@ key={index}
                <div>
                <Container>
   <Row>
-    <Col xs={6} md={4}>
+    <Col xs={6} md={8}>
       <Image src={require('../images/passport.jpg')} width='60' height="60" roundedCircle />
+    <strong> {post.name}</strong> 
+
     </Col>
-    <Col xs={6} md={4} style={{paddingTop:20}}>
+    {/* <Col xs={6} md={4} style={{paddingTop:20}}>
     {post.name}
-    </Col>
+    </Col> */}
     <Col xs={6} md={4}  style={{paddingTop:20}}>
     {/* {moment(post.timestamp).startOf('hour').fromNow()}  */}
 
-      {post.timestamp}
+      {post.timestamp} delete
     </Col>
   </Row>
 </Container>
@@ -255,7 +270,7 @@ key={index}
                <Row>
                  <Col xs={6} md={12} style={{paddingTop:10}}>
     
-                {post.name} : {post.description}
+              <strong>  {post.name} : {post.description}</strong>
  
 
     </Col>

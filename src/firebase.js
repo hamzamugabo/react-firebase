@@ -1,8 +1,8 @@
-import * as firebase from "firebase";
+import firebase from "firebase/app";
 import "firebase/firestore";
-import "firebase/firestore";
+import "firebase/auth";
 
-let config = {
+const firebaseApp = firebase.initializeApp({
   apiKey: "AIzaSyADBGCpz7X3Mn_CplfhUUbSBjmyDqWvXhY",
   authDomain: "farmersnet-clone.firebaseapp.com",
   databaseURL: "https://farmersnet-clone.firebaseio.com",
@@ -11,8 +11,11 @@ let config = {
   messagingSenderId: "944813005265",
   appId: "1:944813005265:web:dddfd4b9e904655aea28f0",
   measurementId: "G-WWCE431BJ0"
-};
+});
 
-firebase.initializeApp(config);
+// firebase.initializeApp(config);
+const auth = firebaseApp.auth();
+const fire = firebaseApp.firestore();
 
-export default firebase.firestore();
+export { fire, auth };
+// export default firebase.firestore();

@@ -1,6 +1,7 @@
-import firebase from "../firebase";
+import {fire} from "../firebase";
 
-const db = firebase.collection("/Posts");
+const db = fire.collection("/Posts");
+// console.log(fire);
 
 class TutorialDataService {
   getAll() {
