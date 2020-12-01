@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {auth,fire} from "../firebase";
+import {auth,fire,storage} from "../firebase";
+
 
 export default class Register extends Component {
   constructor(props) {
@@ -9,15 +10,20 @@ export default class Register extends Component {
 
     this.onChangeUsername = this.onChangeUsername.bind(this);
     this.onChangeEmail = this.onChangeEmail.bind(this);
-    this.onChangeTellphone = this.onChangeTellphone.bind(this);
+    this.onChangecity = this.onChangecity.bind(this);
+    this.onChangephoto = this.onChangephoto.bind(this);
+    this.onChangefulname = this.onChangefulname.bind(this);
     this.onChangePassword = this.onChangePassword.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
     this.state = {
       displayName: "",
+      fulname: "",
+      photo: "",
       email: "",
-      tellphone:'',
+      city:'',
       password: "",
+      image:null,
       loading:false,
       errorMessage:null
     };
@@ -29,14 +35,25 @@ export default class Register extends Component {
     });
   }
 
+  onChangefulname(e) {
+    this.setState({
+      fulname: e.target.value,
+    });
+  }
+  onChangephoto(e) {
+    this.setState({
+      photo: e.target.files[0],
+    });
+    console.log(this.state.photo);
+  }
   onChangeEmail(e) {
     this.setState({
       email: e.target.value,
     });
   }
-  onChangeTellphone(e) {
+  onChangecity(e) {
     this.setState({
-        tellphone: e.target.value,
+        city: e.target.value,
     });
   }
 
@@ -54,40 +71,79 @@ export default class Register extends Component {
 
     console.log(`Form submitted:`);
     console.log(`displayName: ${this.state.displayName}`);
+    console.log(`fulname: ${this.state.fulname}`);
     console.log(`email: ${this.state.email}`);
-    console.log(`tellphone: ${this.state.tellphone}`);
+    console.log(`city: ${this.state.city}`);
+    console.log(`photo: ${this.state.photo}`);
     console.log(`password: ${this.state.password}`);
-
-    // const newTodo = {
-    //   displayName: this.state.displayName,
-    //   email: this.state.email,
-    //   tellphone: this.state.tellphone,
-    //   password: this.state.password,
-    // };
+    const formData = new FormData(); 
+     
+    // Update the formData object 
+    formData.append( 
+      "myFile", 
+      this.state.photo, 
+      this.state.photo.name 
+    ); 
    
-    // handleSignUp = () => {
-        // this.setState({ loading: true, disabled: true });
+    // Details of the uploaded file 
+    console.log(this.state.photo); 
+    console.log(formData); 
+    
      auth.createUserWithEmailAndPassword(this.state.email, this.state.password)
-  //    .then((userCredentials)=>{
-  //     if(userCredentials.user){
-  //       userCredentials.user.updateProfile({
-  //         displayName: this.state.displayName,
-  //       }).then((s)=> {
-  //         // this.props.navigation.navigate('Account');
-  //         console.log(s);
-  //       })
-  //     }
-  // })
-  // .catch(function(error) {
-  //   alert(error.message);
-  // });
-            .then(userCredentials => {
-              
-                userCredentials.user.updateProfile({
-                    displayName: this.state.displayName,
-                    phoneNumber: this.state.tellphone
-                }).then((s)=> {
+  
+    
+           .then((s)=> {
                   var user = auth.currentUser;
+// console.log(user);
+// storage.child(user.uid + ".png").getDownloadURL().then(url => {
+//   this.setState({image:url})
+//   // fire.collection("Users")
+//   //                     .doc(data.id)
+//   // .add({
+//   //   image: url
+//   // })
+//   // .then(() => {
+//   //   // setImgURL('')
+//   // })
+// });
+// const ref = storage.child('images');
+// const user_profile = ref.child(user.uid + ".png");
+
+                  let data = {
+                    name: this.state.displayName,
+                    username: this.state.fulname,
+                    email: this.state.email,
+                    location: this.state.city,
+                    id:user.uid,
+                    image:this.state.image
+                    
+                  };
+                  console.log(data)
+                  fire.collection("Usernames")
+                  .doc(data.name).set(
+                    {
+                      username:data.name
+                    }
+                  )
+                    .then(() => {
+                      console.log("Username added");
+                      fire.collection("Users")
+                      .doc(data.id).set(
+                        data
+                      )
+                        .then(() => {
+                          console.log("user added");
+                         
+                        })
+                        .catch((e) => {
+                          console.log(e);
+                        });
+                     
+                    })
+                    .catch((e) => {
+                      console.log(e);
+                    });
+ 
               // console.log(user.email);
                         user.sendEmailVerification().then(function() {
                           // console.log("success")
@@ -101,22 +157,16 @@ export default class Register extends Component {
                   //  this.setState({ loading: false, disabled: false });
               });
                
-            })
-            .catch((error) => {
-              console.log(error);
-              this.setState({ errorMessage: error.message }); 
-              //  this.setState({ loading: false, disabled: false });
-          });
-      
+           
     // };
 
-    this.setState({
-      displayName: "",
-      email: "",
-      tellphone: "",
-      password: "",
-      loading: false,
-    });
+    // this.setState({
+    //   displayName: "",
+    //   email: "",
+    //   city: "",
+    //   password: "",
+    //   loading: false,
+    // });
    
   }
 
@@ -133,6 +183,13 @@ export default class Register extends Component {
         <h3>Register</h3>
     <p style={{color:'red'}}>{this.state.errorMessage}</p>
         <form onSubmit={this.onSubmit}>
+        <div className="form-group">
+            {/* <label>Usename: </label> */}
+            <label>
+          Upload file:</label>
+          <input type="file" onChange={this.onChangephoto} />
+        
+          </div>
           <div className="form-group">
             <label>Usename: </label>
             <input
@@ -140,6 +197,17 @@ export default class Register extends Component {
               className="form-control"
               value={this.state.displayName}
               onChange={this.onChangeUsername}
+              required 
+            />
+          </div>
+          <div className="form-group">
+            <label>Full Name: </label>
+            <input
+              type="text"
+              className="form-control"
+              value={this.state.fulname}
+              onChange={this.onChangefulname}
+              required 
             />
           </div>
           <div className="form-group">
@@ -149,15 +217,17 @@ export default class Register extends Component {
               className="form-control"
               value={this.state.email}
               onChange={this.onChangeEmail}
+              required 
             />
           </div>
           <div className="form-group">
-            <label>Phone Number: </label>
+            <label>City: </label>
             <input
               type="text"
               className="form-control"
-              value={this.state.tellphone}
-              onChange={this.onChangeTellphone}
+              value={this.state.city}
+              onChange={this.onChangecity}
+              required 
             />
           </div>
           <div className="form-group">
@@ -167,6 +237,7 @@ export default class Register extends Component {
               className="form-control"
               value={this.state.password}
               onChange={this.onChangePassword}
+              required 
             />
           </div>
 

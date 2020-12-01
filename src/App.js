@@ -37,7 +37,7 @@ import Home from "./components/Home";
 class App extends Component {
   render() {
     var user = auth.currentUser;
-
+console.log(user);
     // auth.onAuthStateChanged((user) => {
       if (user) {
         return (
@@ -120,7 +120,7 @@ class App extends Component {
               <Switch>
                 
              <Route exact path="/" component={Loading} />
-             <Route exact path="/home" component={Home} />
+             <Route path="/home" component={Home} />
              <Route path="/register" component={Register} />
              <Route path="/login" component={Login} />
             {/*  <Route path="/home" component={Home} />

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { BrowserRouter,Switch,Route } from "react-router-dom";
 import TutorialDataService from "../services/tutorial.service";
 import Tutorial from "./tutorial.component";
-import {Image,Row,Col,Container,Badge} from 'react-bootstrap';
+import {Image,Row,Col,Container,Badge,Button} from 'react-bootstrap';
 import passport from '../images/passport.jpg';
 import ReactShadowScroll from 'react-shadow-scroll';
 import add from '../images/add.svg';
@@ -10,6 +10,7 @@ import notification from '../images/notification.svg';
 import people from '../images/people.svg';
 import settings from '../images/settings.svg';
 import sms from '../images/sms.svg';
+import logout from '../images/logout.svg';
 import moment from 'moment'
 import {auth} from '../firebase';
  // import "./App.css";
@@ -24,6 +25,7 @@ class Home extends Component {
     this.setActiveTutorial = this.setActiveTutorial.bind(this);
     this.onDataChange = this.onDataChange.bind(this);
     this.check=this.check.bind(this);
+    this.logout=this.logout.bind(this);
 
     this.state = {
       tutorials: [],
@@ -103,7 +105,12 @@ class Home extends Component {
       currentIndex: index,
     });
   }
-
+  logout() {
+    auth.signOut();
+    
+    this.props.history.push("/login");
+    
+  }
   render() {
     const { tutorials, currentTutorial, currentIndex } = this.state;
     // var user = auth.currentUser;
@@ -182,20 +189,23 @@ class Home extends Component {
   <Row style={{marginBottom:15, paddingLeft:20}} >
 
     <Col xs={6} md={4} style={{paddingTop:5}}>
-    <Image src={require('../images/passport.jpg')} width='40' height="40" roundedCircle />
+    <Image src={logout} width='40' height="40" rounded />
 
  {/* <Badge variant="light">9</Badge> */}
 
     </Col>
     <Col xs={6} md={4} style={{paddingTop:20}}>
-    Hamza Mugabo{'\n'}
-    
+    <Button variant="link"
+     onClick={this.logout.bind(this)}
+    >
+       <strong style={{color:'black'}}> Logout</strong></Button>
+  
  {/* <Badge variant="light">9</Badge> */}
 
     </Col>
     <Col xs={6} md={4} style={{paddingTop:20}}>
     
-    View profile
+    {/* View profile */}
  {/* <Badge variant="light">9</Badge> */}
 
     </Col>
