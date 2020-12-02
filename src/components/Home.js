@@ -12,7 +12,7 @@ import settings from '../images/settings.svg';
 import sms from '../images/sms.svg';
 import logout from '../images/logout.svg';
 import moment from 'moment'
-import {auth} from '../firebase';
+import {auth,storage,fire} from '../firebase';
  // import "./App.css";
 
 // import AddTutorial from "./components/add-tutorial.component";
@@ -33,32 +33,30 @@ class Home extends Component {
       currentIndex: -1,
       lithuania: '',
       uk: '',
-      currentUser:null
+      photo: null,
+      userimage:null,
+      currentUser:null,
+      username:'',
+      userdata:[],
+      postdata:[]
 
     };
-    // this.getImage('lithuania')
-    // this.getImage('uk')
     this.unsubscribe = undefined;
   }
 
-  // getImage (image) {
-  //   let { state } = this
-  //   storage.child(`${image}.png`).getDownloadURL().then((url) => {
-  //     state[image] = url
-  //     this.setState(state)
-  //   }).catch((error) => {
-  //     // Handle any errors
-  //   })
-  // }
   componentDidMount() {
     this.unsubscribe = TutorialDataService.getAll().orderBy("timestamp", "asc").onSnapshot(this.onDataChange);
+    
+
    this.check();
+    
   }
   check(){
     auth.onAuthStateChanged(function(user) {
       if (user) {
         
-        console.log(user);
+        // console.log(user.uid);
+        
       } 
     });
   }
@@ -76,19 +74,79 @@ class Home extends Component {
       tutorials.push({
         id: id,
         userId:data.userId,
-        name: data.name,
+        username: data.username,
         description: data.description,
         timestamp:  data.timestamp,
         userimage:data.userimage
       });
     });
+const user = auth.currentUser;
+storage
+    .ref("images")
+    .child(user.uid+'.png')
+    .getDownloadURL()
+    .then(url => {
+      var image = fire.collection("/Users").doc(user.uid);
+      
+ image.update({
+    image: url
+})
+.then(function() {
+    console.log("Document successfully updated!");
+})
+.catch(function(error) {
+    // The document probably doesn't exist.
+    console.error("Error updating document: ", error);
+});
+      this.setState({ photo:url });
+      // console.log(this.state.photo)
+
+
+      image.get().then((doc)=> {
+        if (doc.exists) {
+          const result = doc.data().username
+          this.setState({username:result})
+            console.log(`Document data: ${this.state.username}`);
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+        }
+      }).catch(function(error) {
+        console.log("Error getting document:", error);
+      });
+      
+
+    }).catch((error)=>{console.log(error.code)});
+
+  
+
 
     this.setState({
       tutorials: tutorials,
       
     });
+   const data = this.state.tutorials.map(data=>{return data.userId});
+   this.setState({postdata:data})
 
-    console.log(Math.floor(new Date().getTime()/1000.0))
+   fire.collection('Users').onSnapshot(
+    (snapshot) => {
+      // Loop through the snapshot and collect
+      // the necessary info we need. Then push
+      // it into our array
+      const allMessages = [];
+      snapshot.forEach((doc) => allMessages.push(doc.data()));
+
+      // Set the collected array as our state
+      this.setState({userdata:allMessages});
+      // console.log(this.state.userdata)
+      // this.state.userdata.filter(name => name.id === this.state.search).map(filteredName => {
+      //   return filteredName});
+    },
+    (error) => console.error(error)
+  );
+
+
+    
 
   }
 
@@ -116,6 +174,7 @@ class Home extends Component {
     // var user = auth.currentUser;
     return (
       <div style={{backgroundColor:'linen',marginTop:90}}>
+       {/* photo: {this.state.photo} */}
       <div  style={{overflowX:'hidden'}}>
       {/* <ReactShadowScroll> */}
        <div className="row" style={{marginBottom:10}}>
@@ -125,13 +184,13 @@ class Home extends Component {
                <Container>
                <Row style={{marginBottom:30}}>
     <Col xs={6} md={4} style={{paddingTop:5}}>
-    <Image src={require('../images/passport.jpg')} width='80' height="80" roundedCircle />
+    <Image src={this.state.photo} width='80' height="80" roundedCircle />
 
  {/* <Badge variant="light">9</Badge> */}
 
     </Col>
     <Col xs={6} md={4} style={{paddingTop:20}}>
-   <strong>name</strong>
+   <strong>{this.state.username}</strong>
     
  {/* <Badge variant="light">9</Badge> */}
 
@@ -251,8 +310,8 @@ key={index}
                <Container>
   <Row>
     <Col xs={6} md={8}>
-      <Image src={require('../images/passport.jpg')} width='60' height="60" roundedCircle />
-    <strong> {post.name}</strong> 
+      <Image src={post.userimage} width='60' height="60" roundedCircle />
+    <strong> {post.username}</strong> 
 
     </Col>
     {/* <Col xs={6} md={4} style={{paddingTop:20}}>
@@ -261,7 +320,7 @@ key={index}
     <Col xs={6} md={4}  style={{paddingTop:20}}>
     {/* {moment(post.timestamp).startOf('hour').fromNow()}  */}
 
-      {post.timestamp} delete
+      {post.timestamp} 
     </Col>
   </Row>
 </Container>
@@ -270,7 +329,12 @@ key={index}
                <div>
                  
                  <Container style={{marginBottom:10}}>
-      <Image src={post.userimage} width="100%" height="10%" />
+                   {post.image_url?( <Image src={post.userimage} width="100%" height="10%" />):
+                   (<div style={{maxHeight:'100',textAlign:'center', backgroundColor:'lightblue'}}>
+                     <div style={{padding:90}}>   {post.description}</div>
+                  
+                     </div>)}
+     
 
                  </Container>
                 
@@ -280,7 +344,7 @@ key={index}
                <Row>
                  <Col xs={6} md={12} style={{paddingTop:10}}>
     
-              <strong>  {post.name} : {post.description}</strong>
+              <strong>  {post.username} : {post.description}</strong>
  
 
     </Col>

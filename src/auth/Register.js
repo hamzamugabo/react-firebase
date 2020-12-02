@@ -23,6 +23,7 @@ export default class Register extends Component {
       email: "",
       city:'',
       password: "",
+      uploaded:false,
       image:null,
       loading:false,
       errorMessage:null
@@ -87,27 +88,19 @@ export default class Register extends Component {
    
     // Details of the uploaded file 
     console.log(this.state.photo); 
-    console.log(formData); 
+    // console.log(formData); 
     
      auth.createUserWithEmailAndPassword(this.state.email, this.state.password)
   
     
            .then((s)=> {
                   var user = auth.currentUser;
-// console.log(user);
-// storage.child(user.uid + ".png").getDownloadURL().then(url => {
-//   this.setState({image:url})
-//   // fire.collection("Users")
-//   //                     .doc(data.id)
-//   // .add({
-//   //   image: url
-//   // })
-//   // .then(() => {
-//   //   // setImgURL('')
-//   // })
-// });
-// const ref = storage.child('images');
-// const user_profile = ref.child(user.uid + ".png");
+console.log(user);
+storage.ref('images').child(user.uid+ '.png').put(this.state.photo);
+
+
+// }
+
 
                   let data = {
                     name: this.state.displayName,
@@ -115,7 +108,9 @@ export default class Register extends Component {
                     email: this.state.email,
                     location: this.state.city,
                     id:user.uid,
-                    image:this.state.image
+                    image:this.state.image,
+                    bio:"Hey there, I am a Farmers Net user.",
+                    // token_ids:user.getIdToken
                     
                   };
                   console.log(data)

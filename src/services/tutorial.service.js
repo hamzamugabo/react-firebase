@@ -9,7 +9,9 @@ class TutorialDataService {
   getAll() {
     return db;
   }
-
+  getUsers() {
+    return fire.collection('/Users');
+  }
   create(tutorial) {
     return db.add(tutorial);
   }
