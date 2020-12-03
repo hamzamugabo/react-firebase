@@ -12,6 +12,7 @@ import settings from '../images/settings.svg';
 import sms from '../images/sms.svg';
 import logout from '../images/logout.svg';
 import moment from 'moment'
+import Header from '../header';
 import {auth,storage,fire} from '../firebase';
  // import "./App.css";
 
@@ -77,10 +78,26 @@ class Home extends Component {
         username: data.username,
         description: data.description,
         timestamp:  data.timestamp,
-        userimage:data.userimage
+        userimage:data.userimage,
+        image_url_0:data.image_url_0,
+        image_url_1:data.image_url_1,
+        image_url_2:data.image_url_2,
+        image_url_3:data.image_url_3,
+        image_url_4:data.image_url_4,
+        image_url_5:data.image_url_5,
+        image_url_6:data.image_url_6,
+        // like:fire.collection("Posts").doc(id).collection("Liked_Users").get()
+        // .then(querySnapshot => {
+        //     querySnapshot.forEach(doc => {
+        //         // console.log(doc.data().liked);
+        //          return doc.data().liked;
+        //     });
+        // })
       });
+      
     });
 const user = auth.currentUser;
+// console.log(user.uid);
 storage
     .ref("images")
     .child(user.uid+'.png')
@@ -104,7 +121,7 @@ storage
 
       image.get().then((doc)=> {
         if (doc.exists) {
-          const result = doc.data().username
+          const result = doc.data().username;
           this.setState({username:result})
             console.log(`Document data: ${this.state.username}`);
         } else {
@@ -138,9 +155,7 @@ storage
 
       // Set the collected array as our state
       this.setState({userdata:allMessages});
-      // console.log(this.state.userdata)
-      // this.state.userdata.filter(name => name.id === this.state.search).map(filteredName => {
-      //   return filteredName});
+     
     },
     (error) => console.error(error)
   );
@@ -173,7 +188,8 @@ storage
     const { tutorials, currentTutorial, currentIndex } = this.state;
     // var user = auth.currentUser;
     return (
-      <div style={{backgroundColor:'linen',marginTop:90}}>
+      <div   style={{backgroundColor:'linen',marginTop:90}}>
+      <Header/>
        {/* photo: {this.state.photo} */}
       <div  style={{overflowX:'hidden'}}>
       {/* <ReactShadowScroll> */}
@@ -279,17 +295,16 @@ storage
              
            
            </div>
-          {tutorials.map((post,index)=>(
+          {/* {tutorials.map((post,index)=>( */}
 
                 <div className="col-sm-6" 
            style={{
             backgroundColor:'linen',
            
           }}
-key={index}
+// key={index}
            >
-
-{/* {tutorials.map((tutorial, index) => ( */}
+{tutorials.map((post,index)=>(
                 
                <div 
                style={{
@@ -299,15 +314,15 @@ key={index}
                    paddingRight:20,
                    alignItems:'center',
                    
-    marginBottom:10,
+    marginBottom:15,
     marginLeft:10,
     marginRight:10,
     marginTop:10,
                }}
-              //  key={index}
+               key={index}
                >
                <div>
-               <Container>
+               <Container style={{marginBottom:10}}>
   <Row>
     <Col xs={6} md={8}>
       <Image src={post.userimage} width='60' height="60" roundedCircle />
@@ -328,10 +343,11 @@ key={index}
                </div>
                <div>
                  
-                 <Container style={{marginBottom:10}}>
-                   {post.image_url?( <Image src={post.userimage} width="100%" height="10%" />):
+                 <Container style={{marginBottom:10,maxHeight:'70%'}}>
+                 {/* <Image src={post.image_url_0} width="100%" height="10%" /> */}
+                   {post.image_url_0?( <Image src={post.image_url_0} width="100%" height="10%" />):
                    (<div style={{maxHeight:'100',textAlign:'center', backgroundColor:'lightblue'}}>
-                     <div style={{padding:90}}>   {post.description}</div>
+                     <div style={{padding:50}}>   {post.description}</div>
                   
                      </div>)}
      
@@ -356,7 +372,7 @@ key={index}
   <Row>
     <Col xs={6} md={4} style={{paddingTop:20}}>
       like
- <Badge variant="light">9</Badge>
+ <Badge variant="light">Like</Badge>
 
     </Col>
     <Col xs={6} md={4} style={{paddingTop:20}}>
@@ -375,13 +391,11 @@ key={index}
 </Container>
                </div>
                </div>
-               {/* ))} */}
-
-
-               {/* here */}
+           ))}
+              
            </div>
              
-           ))}
+          
            <div className="col-sm-2"></div>
 
        </div>
