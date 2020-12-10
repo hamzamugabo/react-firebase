@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { BrowserRouter,Switch,Route } from "react-router-dom";
 import TutorialDataService from "../services/tutorial.service";
 import Tutorial from "./tutorial.component";
-import {Image,Row,Col,Container,Badge,Button} from 'react-bootstrap';
+import {Image,Row,Col,Container,Badge,Button,Carousel} from 'react-bootstrap';
 import passport from '../images/passport.jpg';
 import ReactShadowScroll from 'react-shadow-scroll';
 import add from '../images/add.svg';
@@ -14,6 +14,9 @@ import logout from '../images/logout.svg';
 import moment from 'moment'
 import Header from '../header';
 import {auth,storage,fire} from '../firebase';
+import { Slide } from 'react-slideshow-image';
+import ReactTimeAgo from 'react-time-ago'
+import 'react-slideshow-image/dist/styles.css'
  // import "./App.css";
 
 // import AddTutorial from "./components/add-tutorial.component";
@@ -39,14 +42,15 @@ class Home extends Component {
       currentUser:null,
       username:'',
       userdata:[],
-      postdata:[]
+      postdata:[],
+      userid:null,
 
     };
     this.unsubscribe = undefined;
   }
 
   componentDidMount() {
-    this.unsubscribe = TutorialDataService.getAll().orderBy("timestamp", "asc").onSnapshot(this.onDataChange);
+    this.unsubscribe = TutorialDataService.getAll().orderBy("timestamp", "desc").onSnapshot(this.onDataChange);
     
 
    this.check();
@@ -77,7 +81,7 @@ class Home extends Component {
         userId:data.userId,
         username: data.username,
         description: data.description,
-        timestamp:  data.timestamp,
+        timestamp:data.timestamp,
         userimage:data.userimage,
         image_url_0:data.image_url_0,
         image_url_1:data.image_url_1,
@@ -86,6 +90,7 @@ class Home extends Component {
         image_url_4:data.image_url_4,
         image_url_5:data.image_url_5,
         image_url_6:data.image_url_6,
+        image_count:data.image_count
         // like:fire.collection("Posts").doc(id).collection("Liked_Users").get()
         // .then(querySnapshot => {
         //     querySnapshot.forEach(doc => {
@@ -140,6 +145,7 @@ storage
 
     this.setState({
       tutorials: tutorials,
+      userid: user.uid
       
     });
    const data = this.state.tutorials.map(data=>{return data.userId});
@@ -333,9 +339,17 @@ storage
     {post.name}
     </Col> */}
     <Col xs={6} md={4}  style={{paddingTop:20}}>
-    {/* {moment(post.timestamp).startOf('hour').fromNow()}  */}
-
-      {post.timestamp} 
+    <ReactTimeAgo date={parseInt(post.timestamp)} locale="en-US"/>
+    {' '}{' '}
+    {
+     this.state.userid == post.userId?
+     <Button variant="link" >Delete</Button>:null 
+    }
+{/* {this.state.userid} */}
+    {/* {moment(parseInt(post.timestamp)).startOf('hour').fromNow()}  */}
+    {/* {new Date( parseInt(post.timestamp)).toLocaleDateString("en-US")} */}
+    {/* {post.timestamp}  */}
+    {/* {moment.unix(post.timestamp).utc()} */}
     </Col>
   </Row>
 </Container>
@@ -343,13 +357,350 @@ storage
                </div>
                <div>
                  
-                 <Container style={{marginBottom:10,maxHeight:'70%'}}>
-                 {/* <Image src={post.image_url_0} width="100%" height="10%" /> */}
-                   {post.image_url_0?( <Image src={post.image_url_0} width="100%" height="10%" />):
-                   (<div style={{maxHeight:'100',textAlign:'center', backgroundColor:'lightblue'}}>
-                     <div style={{padding:50}}>   {post.description}</div>
-                  
-                     </div>)}
+                 <Container style={{marginBottom:10,maxHeight:'60%'}}>
+
+                 {/* seven */}
+                   {post.image_count == 0?
+                      <div style={{maxHeight:'100',textAlign:'center', backgroundColor:'lightblue'}}>
+                      <div style={{padding:50}}>   {post.description}</div>
+                   
+                      </div>
+                      //  <Image src={post.image_url_0} width="100%" height="10%" />
+                   :[
+                   
+                   post.image_count == 1?
+
+                     
+                      <Image src={post.image_url_0} width="100%" height="60%"/>
+                        
+                    :[
+                      post.image_count == 2?
+                      <Carousel style={{maxHeight:'60%',objectFit:'cover'}}>
+                      <Carousel.Item interval={1000}>
+                        <img
+                          className="d-block w-100"
+                          src={post.image_url_0}
+                          alt="First slide"
+                          height="10%"
+                        />
+                        <Carousel.Caption>
+                          <p>1</p>
+                        </Carousel.Caption>
+                      </Carousel.Item>
+                      <Carousel.Item interval={500}>
+                        <img
+                          className="d-block w-100"
+                          src={post.image_url_1}
+                          alt="Third slide"
+                        />
+                        <Carousel.Caption>
+                         
+                          <p>2</p>
+                        </Carousel.Caption>
+                      </Carousel.Item>
+                    </Carousel> 
+                    :[
+                      post.image_count == 3?
+                      <Carousel style={{maxHeight:'60%'}}>
+                      <Carousel.Item interval={1000}>
+                        <img
+                          className="d-block w-100"
+                          src={post.image_url_0}
+                          alt="First slide"
+                          height="10%"
+                        />
+                        <Carousel.Caption>
+                          <p>1</p>
+                        </Carousel.Caption>
+                      </Carousel.Item>
+                      <Carousel.Item interval={500}>
+                        <img
+                          className="d-block w-100"
+                          src={post.image_url_1}
+                          alt="Third slide"
+                        />
+                        <Carousel.Caption>
+                         
+                          <p>2</p>
+                        </Carousel.Caption>
+                      </Carousel.Item>
+                      <Carousel.Item interval={500}>
+                        <img
+                          className="d-block w-100"
+                          src={post.image_url_2}
+                          alt="Third slide"
+                        />
+                        <Carousel.Caption>
+                         
+                          <p>3</p>
+                        </Carousel.Caption>
+                      </Carousel.Item>
+                    </Carousel> 
+                    :[
+                      post.image_count == 4?
+                      <Carousel style={{maxHeight:'60%'}}>
+                      <Carousel.Item interval={1000}>
+                        <img
+                          className="d-block w-100"
+                          src={post.image_url_0}
+                          alt="First slide"
+                          height="10%"
+                        />
+                        <Carousel.Caption>
+                          <p>1</p>
+                        </Carousel.Caption>
+                      </Carousel.Item>
+                      <Carousel.Item interval={500}>
+                        <img
+                          className="d-block w-100"
+                          src={post.image_url_1}
+                          alt="Third slide"
+                        />
+                        <Carousel.Caption>
+                         
+                          <p>2</p>
+                        </Carousel.Caption>
+                      </Carousel.Item>
+                      <Carousel.Item interval={500}>
+                        <img
+                          className="d-block w-100"
+                          src={post.image_url_2}
+                          alt="Third slide"
+                        />
+                        <Carousel.Caption>
+                         
+                          <p>3</p>
+                        </Carousel.Caption>
+                      </Carousel.Item> <Carousel.Item interval={500}>
+                        <img
+                          className="d-block w-100"
+                          src={post.image_url_3}
+                          alt="Third slide"
+                        />
+                        <Carousel.Caption>
+                         
+                          <p>4</p>
+                        </Carousel.Caption>
+                      </Carousel.Item>
+                     
+                    </Carousel> 
+                    :[
+                      post.image_count==5?
+                      <Carousel style={{maxHeight:'60%'}}>
+                      <Carousel.Item interval={1000}>
+                        <img
+                          className="d-block w-100"
+                          src={post.image_url_0}
+                          alt="First slide"
+                          height="10%"
+                        />
+                        <Carousel.Caption>
+                          <p>1</p>
+                        </Carousel.Caption>
+                      </Carousel.Item>
+                      <Carousel.Item interval={500}>
+                        <img
+                          className="d-block w-100"
+                          src={post.image_url_1}
+                          alt="Third slide"
+                        />
+                        <Carousel.Caption>
+                         
+                          <p>2</p>
+                        </Carousel.Caption>
+                      </Carousel.Item>
+                      <Carousel.Item interval={500}>
+                        <img
+                          className="d-block w-100"
+                          src={post.image_url_2}
+                          alt="Third slide"
+                        />
+                        <Carousel.Caption>
+                         
+                          <p>3</p>
+                        </Carousel.Caption>
+                      </Carousel.Item> <Carousel.Item interval={500}>
+                        <img
+                          className="d-block w-100"
+                          src={post.image_url_3}
+                          alt="Third slide"
+                        />
+                        <Carousel.Caption>
+                         
+                          <p>4</p>
+                        </Carousel.Caption>
+                      </Carousel.Item>
+                      <Carousel.Item interval={500}>
+                        <img
+                          className="d-block w-100"
+                          src={post.image_url_4}
+                          alt="Third slide"
+                        />
+                        <Carousel.Caption>
+                         
+                          <p>5</p>
+                        </Carousel.Caption>
+                      </Carousel.Item>
+                    </Carousel> 
+                    :[
+                      post.image_count == 6?
+                      <Carousel style={{maxHeight:'60%'}}>
+                      <Carousel.Item interval={1000}>
+                        <img
+                          className="d-block w-100"
+                          src={post.image_url_0}
+                          alt="First slide"
+                          height="10%"
+                        />
+                        <Carousel.Caption>
+                          <p>1</p>
+                        </Carousel.Caption>
+                      </Carousel.Item>
+                      <Carousel.Item interval={500}>
+                        <img
+                          className="d-block w-100"
+                          src={post.image_url_1}
+                          alt="Third slide"
+                        />
+                        <Carousel.Caption>
+                         
+                          <p>2</p>
+                        </Carousel.Caption>
+                      </Carousel.Item>
+                      <Carousel.Item interval={500}>
+                        <img
+                          className="d-block w-100"
+                          src={post.image_url_2}
+                          alt="Third slide"
+                        />
+                        <Carousel.Caption>
+                         
+                          <p>3</p>
+                        </Carousel.Caption>
+                      </Carousel.Item> <Carousel.Item interval={500}>
+                        <img
+                          className="d-block w-100"
+                          src={post.image_url_3}
+                          alt="Third slide"
+                        />
+                        <Carousel.Caption>
+                         
+                          <p>4</p>
+                        </Carousel.Caption>
+                      </Carousel.Item>
+                      <Carousel.Item interval={500}>
+                        <img
+                          className="d-block w-100"
+                          src={post.image_url_4}
+                          alt="Third slide"
+                        />
+                        <Carousel.Caption>
+                         
+                          <p>5</p>
+                        </Carousel.Caption>
+                      </Carousel.Item>
+                      <Carousel.Item interval={500}>
+                        <img
+                          className="d-block w-100"
+                          src={post.image_url_5}
+                          alt="Third slide"
+                        />
+                        <Carousel.Caption>
+                         
+                          <p>6</p>
+                        </Carousel.Caption>
+                      </Carousel.Item>
+                    </Carousel> 
+                    :
+                    <Carousel style={{maxHeight:'60%'}}>
+                    <Carousel.Item interval={1000}>
+                      <img
+                        className="d-block w-100"
+                        src={post.image_url_0}
+                        alt="First slide"
+                        height="10%"
+                      />
+                      <Carousel.Caption>
+                        <p>1</p>
+                      </Carousel.Caption>
+                    </Carousel.Item>
+                    <Carousel.Item interval={500}>
+                      <img
+                        className="d-block w-100"
+                        src={post.image_url_1}
+                        alt="Third slide"
+                      />
+                      <Carousel.Caption>
+                       
+                        <p>2</p>
+                      </Carousel.Caption>
+                    </Carousel.Item>
+                    <Carousel.Item interval={500}>
+                      <img
+                        className="d-block w-100"
+                        src={post.image_url_2}
+                        alt="Third slide"
+                      />
+                      <Carousel.Caption>
+                       
+                        <p>3</p>
+                      </Carousel.Caption>
+                    </Carousel.Item> <Carousel.Item interval={500}>
+                      <img
+                        className="d-block w-100"
+                        src={post.image_url_3}
+                        alt="Third slide"
+                      />
+                      <Carousel.Caption>
+                       
+                        <p>4</p>
+                      </Carousel.Caption>
+                    </Carousel.Item>
+                    <Carousel.Item interval={500}>
+                      <img
+                        className="d-block w-100"
+                        src={post.image_url_4}
+                        alt="Third slide"
+                      />
+                      <Carousel.Caption>
+                       
+                        <p>5</p>
+                      </Carousel.Caption>
+                    </Carousel.Item>
+                    <Carousel.Item interval={500}>
+                      <img
+                        className="d-block w-100"
+                        src={post.image_url_5}
+                        alt="Third slide"
+                      />
+                      <Carousel.Caption>
+                       
+                        <p>6</p>
+                      </Carousel.Caption>
+                    </Carousel.Item>
+                    
+                    <Carousel.Item interval={500}>
+                      <img
+                        className="d-block w-100"
+                        src={post.image_url_6}
+                        alt="Third slide"
+                      />
+                      <Carousel.Caption>
+                       
+                        <p>7</p>
+                      </Carousel.Caption>
+                    </Carousel.Item>
+                  </Carousel> 
+                    ]
+                    ]
+                    ]
+                   
+                    ]
+
+                    ]
+                      
+                    ]
+                    }
      
 
                  </Container>

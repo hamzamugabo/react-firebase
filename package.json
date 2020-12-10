@@ -15,7 +15,9 @@
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.4",
-    "react-shadow-scroll": "^2.1.0"
+    "react-shadow-scroll": "^2.1.0",
+    "react-slideshow-image": "^3.4.2",
+    "react-time-ago": "^6.2.1"
   },
   "scripts": {
     "start": "react-scripts start",
